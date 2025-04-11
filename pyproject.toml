@@ -1,0 +1,17 @@
+[project]
+name = "HDL-Gen"
+version = "0.1.0"
+description = "A simple Python intuitive HDL code generator for Verilog/SystemVerilog and VHDL."
+readme = "README.md"
+authors = [
+    { name = "Kelvin Chung", email = "king.chung@manchester.ac.uk" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "pre-commit>=4.2.0",
+    "pytest>=8.3.5",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
