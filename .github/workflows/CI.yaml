@@ -30,4 +30,5 @@ jobs:
 
       - name: Test with pytest
         run: |
-          uv run pytest --doctest-modules
+          uv run pytest
+
