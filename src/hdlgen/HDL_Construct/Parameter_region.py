@@ -25,7 +25,10 @@ class ParameterRegion(Region):
         return self._indent
 
     def __str__(self) -> str:
-        if self._writer == WriterType.VERILOG:
+        if (
+            self._writer == WriterType.VERILOG
+            or self._writer == WriterType.SYSTEM_VERILOG
+        ):
             lines = []
 
             for idx, item in enumerate(self.container):
@@ -48,7 +51,10 @@ class ParameterRegion(Region):
         writer: WriterType
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 return f"parameter {self.name} = {self.value}"
             else:
                 return f"{self.name} : integer := {self.value}"

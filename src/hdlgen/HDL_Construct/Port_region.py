@@ -52,10 +52,16 @@ class PortRegion(Region):
         attribute: list | None = None
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 sType = "wire"
                 if self.direction == IO.OUTPUT:
                     sType = "reg"
+
+                if self.writer == WriterType.SYSTEM_VERILOG:
+                    sType = "logic"
 
                 if self.attribute:
                     attr = f"(* {', '.join([str(i) for i in self.attribute])} *) "

@@ -1,7 +1,7 @@
 [project]
-name = "HDL-Gen"
+name = "hdlgen"
 version = "0.0.1"
-description = "A simple Python intuitive HDL code generator for Verilog/SystemVerilog and VHDL."
+description = "An intuitive Python based HDL code generator for Verilog/SystemVerilog and VHDL."
 readme = "README.md"
 authors = [
     { name = "Kelvin Chung", email = "king.chung@manchester.ac.uk" }

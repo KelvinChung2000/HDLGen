@@ -18,7 +18,10 @@ class LogicRegion(Region):
         self._indent = indent
 
     def __str__(self) -> str:
-        if self._writer == WriterType.VERILOG:
+        if (
+            self._writer == WriterType.VERILOG
+            or self._writer == WriterType.SYSTEM_VERILOG
+        ):
             return f"\n{'\n'.join([str(i) for i in self.container])}"
         else:
             signal = []
@@ -128,7 +131,10 @@ class LogicRegion(Region):
         writer: WriterType
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 if isinstance(self.src, int):
                     return f".{self.dst}({max(self.src.bit_length(), 1)}'d{self.src})"
                 else:
@@ -147,7 +153,10 @@ class LogicRegion(Region):
         indentCount: int
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 if self.parameter:
                     r = (
                         f"{' ' * self.indent}{self.module} #(\n"
@@ -187,7 +196,10 @@ class LogicRegion(Region):
         writer: WriterType
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 if isinstance(self.src, int):
                     return (
                         f"assign {self.dst} = {max(int(self.dst.bits), 1)}'d{self.src};"
@@ -210,6 +222,13 @@ class LogicRegion(Region):
                     return f"reg [{self.bits - 1}:0] {self.name};"
                 else:
                     return f"reg [{self.bits}:0] {self.name};"
+            elif self.writer == WriterType.SYSTEM_VERILOG:
+                if self.bits == 1 and isinstance(self.bits, int):
+                    return f"logic {self.name};"
+                elif isinstance(self.bits, int):
+                    return f"logic [{self.bits - 1}:0] {self.name};"
+                else:
+                    return f"logic [{self.bits}:0] {self.name};"
             else:
                 if self.bits == 1 and isinstance(self.bits, int):
                     return f"{self.name} : std_logic;"
@@ -225,7 +244,10 @@ class LogicRegion(Region):
         writer: WriterType
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 return f"localparam {self.name} = 32'd{self.value};"
             else:
                 return f"constant {self.name} : integer := {self.value};"
@@ -236,7 +258,10 @@ class LogicRegion(Region):
         writer: WriterType
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 return f"{{{' ,'.join(str(i) for i in self.item)}}}"
             else:
                 return f"{' & '.join(str(i) for i in self.item)}"
@@ -256,7 +281,10 @@ class LogicRegion(Region):
         end: int = 0
 
         def __str__(self) -> str:
-            if self.writer == WriterType.VERILOG:
+            if (
+                self.writer == WriterType.VERILOG
+                or self.writer == WriterType.SYSTEM_VERILOG
+            ):
                 if isinstance(self.file, str):
                     return (
                         f"reg [{self.width - 1}:0] {self.dst} [0:{self.depth - 1}];\n"
