@@ -31,6 +31,6 @@ class InitialRegion(LogicRegion, Region):
                     f"initial begin\n{'\n'.join([str(i) for i in self.container])}\nend"
                 )
             case WriterType.VHDL:
-                return f"process\n{'\n'.join([str(i) for i in self.container])}\nwait;\nend process"
+                return f"process\n{'\n'.join([str(i) for i in self.container])}\nwait;\nend process;"
             case _:
                 raise ValueError("Unsupported WriterType")

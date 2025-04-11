@@ -48,9 +48,22 @@ class Module(Region):
             else:
                 return f"module {self.name} {''.join([str(i) for i in self.container])}\nendmodule\n\n"
         else:
+            t: dict = {
+                "param": "",
+                "port": "",
+                "logic": "",
+            }
+            for i in self.container:
+                if isinstance(i, ParameterRegion):
+                    t["param"] = i
+                elif isinstance(i, PortRegion):
+                    t["port"] = i
+                elif isinstance(i, LogicRegion):
+                    t["logic"] = i
+
             return (
-                f"entity {self.name} is\n{self.container[0]}\n{self.container[1]}\nend entity {self.name};\n"
-                f"architecture Behavioral of {self.name} is {self.container[2]}\nend architecture Behavioral;\n"
+                f"entity {self.name} is\n{t['param']}\n{t['port']}\nend entity {self.name};\n"
+                f"architecture Behavioral of {self.name} is {t['logic']}\nend architecture Behavioral;\n"
             )
 
     @contextmanager

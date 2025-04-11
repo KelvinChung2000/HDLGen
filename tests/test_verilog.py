@@ -1,3 +1,47 @@
+from hdlgen.define import IO
+
+
+def test_verilog_module(verilog_generator):
+    """Test Verilog module creation."""
+    with verilog_generator.Module("test_module"):
+        pass
+
+    # Check the string representation
+    with open(verilog_generator.filePath, "r") as f:
+        content = f.read()
+    assert "module test_module" in content
+
+
+def test_verilog_parameter(verilog_generator):
+    """Test Verilog parameter creation."""
+    with verilog_generator.Module("test_module") as m:
+        with m.ParameterRegion() as pr:
+            pr.Parameter("WIDTH", 32)
+            pr.Parameter("DEPTH", 64)
+
+    # Check the string representation
+    with open(verilog_generator.filePath, "r") as f:
+        content = f.read()
+    assert "parameter WIDTH = 32" in content
+    assert "parameter DEPTH = 64" in content
+
+
+def test_verilog_port(verilog_generator):
+    """Test Verilog port creation."""
+    with verilog_generator.Module("test_module") as m:
+        with m.PortRegion() as pr:
+            pr.Port("clk", IO.INPUT)
+            pr.Port("data_out", IO.OUTPUT, 8)
+            pr.Port("data_in", IO.INPUT, 16)
+
+    # Check the string representation
+    with open(verilog_generator.filePath, "r") as f:
+        content = f.read()
+    assert "input wire clk" in content
+    assert "output reg[7:0] data_out" in content
+    assert "input wire[15:0] data_in" in content
+
+
 def test_verilog_signal(verilog_generator):
     """Test Verilog signal creation."""
     with verilog_generator.Module("test_module") as m:

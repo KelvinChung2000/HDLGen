@@ -239,7 +239,7 @@ class LogicRegion(Region):
             if self.writer == WriterType.VERILOG:
                 return f"{{{' ,'.join(str(i) for i in self.item)}}}"
             else:
-                return f"{'& '.join(str(i) for i in self.item)}"
+                return f"{' & '.join(str(i) for i in self.item)}"
 
         @property
         def value(self) -> str:
