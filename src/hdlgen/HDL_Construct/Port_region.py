@@ -93,10 +93,36 @@ class PortRegion(Region):
     def Port(
         self,
         name: str,
-        direction: IO,
+        direction: IO | str,
         width: int | Value = 1,
         attribute: list | None = None,
     ) -> Value:
+        if isinstance(direction, str):
+            direction = IO[direction.upper()]
         _o = self._Port(name, direction, width, self._writer, attribute)
         self.container.append(_o)
         return Value(name, width, isSignal=True)
+
+    def InputPort(
+        self,
+        name: str,
+        width: int | Value = 1,
+        attribute: list | None = None,
+    ) -> Value:
+        return self.Port(name, IO.INPUT, width, attribute)
+
+    def OutputPort(
+        self,
+        name: str,
+        width: int | Value = 1,
+        attribute: list | None = None,
+    ) -> Value:
+        return self.Port(name, IO.OUTPUT, width, attribute)
+
+    def InOutPort(
+        self,
+        name: str,
+        width: int | Value = 1,
+        attribute: list | None = None,
+    ) -> Value:
+        return self.Port(name, IO.INOUT, width, attribute)
