@@ -35,7 +35,7 @@ class Region(ABC):
 
     @contextmanager
     def IfDef(self, marco: str):
-        from FABulous.fabric_generator.HDL_Construct.IfDef_region import IfDefRegion
+        from hdlgen.HDL_Construct.IfDef_region import IfDefRegion
 
         r = IfDefRegion(marco, [], self.indent + self.indentCount)
         try:

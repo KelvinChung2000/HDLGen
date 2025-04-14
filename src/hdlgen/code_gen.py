@@ -13,6 +13,7 @@ class CodeGenerator:
     indentCount: int
     indent: int = 0
     f: TextIO
+    libraries: list[str]
 
     def __init__(
         self,
@@ -20,11 +21,13 @@ class CodeGenerator:
         writerType: WriterType,
         writeMode: Literal["w", "a"] = "w",
         indentCount: int = 4,
+        libraries: list[str] = [""],
     ) -> None:
         self.filePath = Path(path)
         self.writerType = writerType
         self.indentCount = indentCount
         self.f = self.filePath.open(writeMode)
+        self.libraries = libraries
 
     def __del__(self) -> None:
         self.f.close()
@@ -35,7 +38,7 @@ class CodeGenerator:
         name: str,
         attributes=None,
     ):
-        m = Module(name, [], self.writerType, self.indent, attributes)
+        m = Module(name, [], self.writerType, self.indent, attributes, self.libraries)
         try:
             yield m
         finally:

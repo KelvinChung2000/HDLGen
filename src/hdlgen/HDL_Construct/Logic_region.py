@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import Iterable
+from textwrap import indent
 
 from hdlgen.define import WriterType
 from hdlgen.HDL_Construct.Region import Region
@@ -26,12 +27,27 @@ class LogicRegion(Region):
         else:
             signal = []
             other = []
+            comp: list[str] = []
+            repeat = set()
             for i in self.container:
-                if isinstance(i, self._signal):
+                if isinstance(i, (self._signal, self._Constant)):
                     signal.append(i)
+                elif isinstance(i, self._InitModule):
+                    if i.module in repeat:
+                        continue
+                    repeat.add(i.module)
+                    comp.append(i.getVHDL_comp())
+                    other.append(i)
                 else:
                     other.append(i)
-            return f"{''.join([str(i) for i in signal])}begin\n{''.join([str(i) for i in other])}"
+
+            indentCount = (self.indent + self.indentCount) * " "
+            return (
+                f"{indent(f'{"\n".join([str(i) for i in signal])}', indentCount)}\n"
+                # f"{indent(f'{"\n".join([i for i in comp])}', indentCount)}"
+                "\n"
+                f"begin\n{indent(f'{"\n".join([str(i) for i in other])}', indentCount)}"
+            )
 
     @property
     def container(self):
@@ -140,7 +156,10 @@ class LogicRegion(Region):
                 else:
                     return f".{self.dst}({self.src})"
             else:
-                return f"{self.dst} => {self.src}"
+                if isinstance(self.src, int):
+                    return f'{self.dst} => "{self.src}"'
+                else:
+                    return f"{self.dst} => {self.src}"
 
     @dataclass
     class _InitModule:
@@ -174,18 +193,40 @@ class LogicRegion(Region):
             else:
                 if self.parameter:
                     r = (
-                        f"{' ' * self.indent} {self.initName} : {self.module} generic map(\n"
+                        f"{' ' * self.indent}{self.initName} : entity work.{self.module}\ngeneric map(\n"
                         f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.parameter])}\n"
-                        f"{' ' * self.indent}) port map(\n"
+                        f"{' ' * self.indent})\nport map(\n"
                         f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.ports])}\n"
                         f"{' ' * self.indent});\n"
                     )
                 else:
                     r = (
-                        f"{' ' * self.indent} {self.initName} : {self.module} port map(\n"
+                        f"{' ' * self.indent} {self.initName} : entity work.{self.module}()\ngeneric map(\n"
                         f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.ports])}\n"
                         f"{' ' * self.indent});\n"
                     )
+
+            return r
+
+        def getVHDL_comp(self) -> str:
+            if self.parameter:
+                r = (
+                    f"{' ' * self.indent}component {self.module} is\n"
+                    f"{' ' * (self.indent + self.indentCount)} generic(\n"
+                    f"{',\n'.join([f'{" " * (self.indent + self.indentCount * 2)}{i}' for i in self.parameter])}\n"
+                    f"{' ' * (self.indent + self.indentCount)}) port(\n"
+                    f"{',\n'.join([f'{" " * (self.indent + self.indentCount * 2)}{i}' for i in self.ports])}\n"
+                    f"{' ' * (self.indent + self.indentCount)});\n"
+                    f"end component;\n"
+                )
+            else:
+                r = (
+                    f"{' ' * self.indent}component {self.module} is\n"
+                    f"{' ' * (self.indent + self.indentCount)} {self.initName} : {self.module} port(\n"
+                    f"{',\n'.join([f'{" " * (self.indent + self.indentCount * 2)}{i}' for i in self.ports])}\n"
+                    f"{' ' * (self.indent + self.indentCount)});\n"
+                    f"end component;\n"
+                )
 
             return r
 
@@ -231,11 +272,13 @@ class LogicRegion(Region):
                     return f"logic [{self.bits}:0] {self.name};"
             else:
                 if self.bits == 1 and isinstance(self.bits, int):
-                    return f"{self.name} : std_logic;"
+                    return f"signal {self.name} : std_logic;"
                 elif isinstance(self.bits, int):
-                    return f"{self.name} : std_logic_vector({self.bits - 1} downto 0);"
+                    return f"signal {self.name} : std_logic_vector({self.bits - 1} downto 0);"
                 else:
-                    return f"{self.name} : std_logic_vector({self.bits} downto 0);"
+                    return (
+                        f"signal {self.name} : std_logic_vector({self.bits} downto 0);"
+                    )
 
     @dataclass
     class _Constant:

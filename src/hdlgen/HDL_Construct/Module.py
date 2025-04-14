@@ -12,6 +12,7 @@ class Module(Region):
     _indent: int
     name: str
     attributes: list | None = None
+    libraries: list[str] = [""]
 
     def __init__(
         self,
@@ -20,12 +21,14 @@ class Module(Region):
         writer: WriterType,
         indent: int,
         attributes=None,
+        libraries=[""],
     ):
         self.name = name
         self.attributes = attributes
         self._container = container
         self._indent = indent
         self._writer = writer
+        self.libraries = libraries
         # self._parameters = ParameterRegion([], self.indent)
         # self._ports = PortRegion([], self.indent)
         # self._logics = LogicRegion([], self.indent)
@@ -65,8 +68,12 @@ class Module(Region):
                     t["logic"] = i
 
             return (
-                f"entity {self.name} is\n{t['param']}\n{t['port']}\nend entity {self.name};\n"
-                f"architecture Behavioral of {self.name} is {t['logic']}\nend architecture Behavioral;\n"
+                f"library ieee;\n"
+                f"use ieee.std_logic_1164.all;\n"
+                f"use work.all;\n"
+                f"{''.join([f'use {i};\n' for i in self.libraries if i])}\n"
+                f"entity {self.name} is\n{t['param']}\n{t['port']}end entity {self.name};\n"
+                f"architecture Behavioral of {self.name} is \n{t['logic']}\nend architecture Behavioral;\n"
             )
 
     @contextmanager

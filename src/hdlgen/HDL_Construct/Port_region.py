@@ -27,7 +27,10 @@ class PortRegion(Region):
         return self._indent
 
     def __str__(self) -> str:
-        if self._writer == WriterType.VERILOG:
+        if (
+            self._writer == WriterType.VERILOG
+            or self._writer == WriterType.SYSTEM_VERILOG
+        ):
             lines = []
 
             for idx, item in enumerate(self.container):

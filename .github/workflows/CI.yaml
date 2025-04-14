@@ -23,7 +23,7 @@ jobs:
       - name: ruff format and lint
         uses: astral-sh/ruff-action@v3
         with:
-          args: "format --check --diff"
+          args: "format --check --diff --fix"
 
       - name: Install project
         run: uv sync --all-extras --dev
