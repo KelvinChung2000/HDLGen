@@ -178,32 +178,32 @@ class LogicRegion(Region):
             ):
                 if self.parameter:
                     r = (
-                        f"{' ' * self.indent}{self.module} #(\n"
-                        f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.parameter])}\n"
-                        f"{' ' * self.indent}) {self.initName} (\n"
-                        f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.ports])}\n"
-                        f"{' ' * self.indent});\n"
+                        f"{self.module} #(\n"
+                        f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.parameter])}\n"
+                        f") {self.initName} (\n"
+                        f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.ports])}\n"
+                        f");\n"
                     )
                 else:
                     r = (
-                        f"{' ' * self.indent}{self.module} #() {self.initName} (\n"
-                        f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.ports])}\n"
-                        f"{' ' * self.indent});\n"
+                        f"{self.module} #() {self.initName} (\n"
+                        f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.ports])}\n"
+                        f");\n"
                     )
             else:
                 if self.parameter:
                     r = (
-                        f"{' ' * self.indent}{self.initName} : entity work.{self.module}\ngeneric map(\n"
-                        f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.parameter])}\n"
+                        f"{self.initName} : entity work.{self.module}\ngeneric map(\n"
+                        f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.parameter])}\n"
                         f"{' ' * self.indent})\nport map(\n"
-                        f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.ports])}\n"
-                        f"{' ' * self.indent});\n"
+                        f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.ports])}\n"
+                        f");\n"
                     )
                 else:
                     r = (
-                        f"{' ' * self.indent} {self.initName} : entity work.{self.module}()\ngeneric map(\n"
-                        f"{',\n'.join([f'{" " * (self.indent + self.indentCount)}{i}' for i in self.ports])}\n"
-                        f"{' ' * self.indent});\n"
+                        f"{self.initName} : entity work.{self.module}()\ngeneric map(\n"
+                        f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.ports])}\n"
+                        f");\n"
                     )
 
             return r
@@ -211,20 +211,20 @@ class LogicRegion(Region):
         def getVHDL_comp(self) -> str:
             if self.parameter:
                 r = (
-                    f"{' ' * self.indent}component {self.module} is\n"
-                    f"{' ' * (self.indent + self.indentCount)} generic(\n"
-                    f"{',\n'.join([f'{" " * (self.indent + self.indentCount * 2)}{i}' for i in self.parameter])}\n"
-                    f"{' ' * (self.indent + self.indentCount)}) port(\n"
-                    f"{',\n'.join([f'{" " * (self.indent + self.indentCount * 2)}{i}' for i in self.ports])}\n"
-                    f"{' ' * (self.indent + self.indentCount)});\n"
+                    f"component {self.module} is\n"
+                    f"{' ' * self.indentCount} generic(\n"
+                    f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.parameter])}\n"
+                    f"{' ' * self.indentCount}) port(\n"
+                    f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.ports])}\n"
+                    f"{' ' * self.indentCount});\n"
                     f"end component;\n"
                 )
             else:
                 r = (
-                    f"{' ' * self.indent}component {self.module} is\n"
-                    f"{' ' * (self.indent + self.indentCount)} {self.initName} : {self.module} port(\n"
-                    f"{',\n'.join([f'{" " * (self.indent + self.indentCount * 2)}{i}' for i in self.ports])}\n"
-                    f"{' ' * (self.indent + self.indentCount)});\n"
+                    f"component {self.module} is\n"
+                    f"{' ' * (self.indentCount)} {self.initName} : {self.module} port(\n"
+                    f"{',\n'.join([f'{" " * (self.indentCount)}{i}' for i in self.ports])}\n"
+                    f"{' ' * self.indentCount});\n"
                     f"end component;\n"
                 )
 
