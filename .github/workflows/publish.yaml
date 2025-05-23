@@ -23,7 +23,7 @@ jobs:
           run: uv build
 
         - name: publish
-          run: uv publish
+          run: uv publish -t ${{ secrets.PYPI_TOKEN }}
 
         - name: TestPyPI
           run: uv run --with hdlgen --no-project -- python -c "import hdlgen"
