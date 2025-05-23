@@ -9,7 +9,7 @@ module test_module #(
 
 assign output1 = input1;
 localparam const1 = 32'd42;
-reg [7:0] signal1;
+wire [7:0] signal1;
 test #(
     .p(param1)
 ) init (
