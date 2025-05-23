@@ -16,7 +16,7 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 source = "vcs"
 version_scheme = "post-release"
-local_scheme = "dirty-tag"
+local_scheme = "no-local-version"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/hdlgen"]
