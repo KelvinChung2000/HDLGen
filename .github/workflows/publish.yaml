@@ -20,7 +20,9 @@ jobs:
           uses: astral-sh/setup-uv@v5
         
         - name: building
-          run: uv build
+          run: | 
+            uv build
+            sed -i 's/+.*//' dist/*.whl
 
         - name: publish
           run: uv publish -t ${{ secrets.PYPI_TOKEN }}
