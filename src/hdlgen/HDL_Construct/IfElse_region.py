@@ -10,7 +10,7 @@ from hdlgen.HDL_Construct.Value import Value
 
 @dataclass
 class IfElseRegion(LogicRegion, Region):
-    _cond: Value
+    _cond: Value | bool
     _tRegion: list[Region]
     _fRegion: list[Region]
     _writer: WriterType
@@ -18,7 +18,7 @@ class IfElseRegion(LogicRegion, Region):
 
     def __init__(
         self,
-        cond: Value,
+        cond: Value | bool,
         tRegion: list[Region],
         fRegion: list[Region],
         writer: WriterType,
@@ -55,4 +55,15 @@ class IfElseRegion(LogicRegion, Region):
             self._fRegion.append(be)
 
     def __str__(self) -> str:
-        return f"if ({str(self._cond)}) {'\n'.join([str(i) for i in self._tRegion])}\nelse {'\n'.join([str(i) for i in self._fRegion])}\n"
+        if isinstance(self._cond, bool):
+            return (
+                f"if ({str(int(self._cond))}) "
+                f"{'\n'.join([str(i) for i in self._tRegion])}\n"
+                f"else {'\n'.join([str(i) for i in self._fRegion])}\n"
+            )
+        else:
+            return (
+                f"if ({str(self._cond)}) "
+                f"{'\n'.join([str(i) for i in self._tRegion])}\n"
+                f"else {'\n'.join([str(i) for i in self._fRegion])}\n"
+            )

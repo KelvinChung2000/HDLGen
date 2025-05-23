@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Iterable
 from textwrap import indent
+from typing import Iterable
 
 from hdlgen.define import WriterType
 from hdlgen.HDL_Construct.Region import Region
@@ -65,6 +65,11 @@ class LogicRegion(Region):
         self.container.append(_o)
         return Value(name, bits, isSignal=True)
 
+    def Signal_default(self, name: str, bits: int | Value = 1, defaultValue: int = 0):
+        _o = self._signal_default(name, bits, self._writer, defaultValue)
+        self.container.append(_o)
+        return Value(name, bits, isSignal=True)
+
     def Assign(self, dst: Value, src: Value | int):
         _o = self._Assign(dst, src, self._writer)
         self.container.append(_o)
@@ -121,7 +126,7 @@ class LogicRegion(Region):
             self.container.append(r)
 
     @contextmanager
-    def IfElse(self, cond: Value):
+    def IfElse(self, cond: Value | bool):
         from hdlgen.HDL_Construct.IfElse_region import IfElseRegion
 
         r = IfElseRegion(cond, [], [], self._writer, self.indent)
@@ -258,11 +263,11 @@ class LogicRegion(Region):
         def __str__(self) -> str:
             if self.writer == WriterType.VERILOG:
                 if self.bits == 1 and isinstance(self.bits, int):
-                    return f"reg {self.name};"
+                    return f"wire {self.name};"
                 elif isinstance(self.bits, int):
-                    return f"reg [{self.bits - 1}:0] {self.name};"
+                    return f"wire [{self.bits - 1}:0] {self.name};"
                 else:
-                    return f"reg [{self.bits}:0] {self.name};"
+                    return f"wire [{self.bits}:0] {self.name};"
             elif self.writer == WriterType.SYSTEM_VERILOG:
                 if self.bits == 1 and isinstance(self.bits, int):
                     return f"logic {self.name};"
@@ -279,6 +284,37 @@ class LogicRegion(Region):
                     return (
                         f"signal {self.name} : std_logic_vector({self.bits} downto 0);"
                     )
+
+    @dataclass
+    class _signal_default:
+        name: str
+        bits: Value | int = 1
+        writer: WriterType = WriterType.VERILOG
+        defaultValue: int = 0
+
+        def __str__(self) -> str:
+            if self.writer == WriterType.VERILOG:
+                if self.bits == 1 and isinstance(self.bits, int):
+                    return f"wire {self.name} = {self.bits}'d{self.defaultValue};"
+                elif isinstance(self.bits, int):
+                    return f"wire [{self.bits - 1}:0] {self.name} = {self.bits}'d{self.defaultValue};"
+                else:
+                    return f"wire [{self.bits}:0] {self.name} = {self.bits}'d{self.defaultValue};"
+            elif self.writer == WriterType.SYSTEM_VERILOG:
+                if self.bits == 1 and isinstance(self.bits, int):
+                    return f"logic {self.name} = {self.bits}'d{self.defaultValue};"
+                elif isinstance(self.bits, int):
+                    return f"logic [{self.bits - 1}:0] {self.name} = {self.bits}'d{self.defaultValue};"
+                else:
+                    return f"logic [{self.bits}:0] {self.name} = {self.bits}'d{self.defaultValue};"
+            else:
+                v = bin(self.defaultValue)[2:]
+                if self.bits == 1 and isinstance(self.bits, int):
+                    return f'signal {self.name} : std_logic := "{v}";'
+                elif isinstance(self.bits, int):
+                    return f'signal {self.name} : std_logic_vector({self.bits - 1} downto 0) := "{v}";'
+                else:
+                    return f'signal {self.name} : std_logic_vector({self.bits} downto 0) := "{v}";'
 
     @dataclass
     class _Constant:

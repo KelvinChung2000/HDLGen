@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from textwrap import indent
 
 from hdlgen.HDL_Construct.Logic_region import LogicRegion
 from hdlgen.HDL_Construct.Region import Region
@@ -25,4 +26,4 @@ class BeginEndRegion(LogicRegion, Region):
         return self._indent
 
     def __str__(self) -> str:
-        return f"begin\n{'\n'.join([f'{str(i)}' for i in self.container])}\nend"
+        return f"begin\n{indent('\n'.join([f'{str(i)}' for i in self.container]), ' ' * self.indent)}\nend"
