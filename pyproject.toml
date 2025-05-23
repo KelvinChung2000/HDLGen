@@ -1,6 +1,6 @@
 [project]
 name = "hdlgen"
-version = "0.0.1"
+version = "0.0.1.dev1"
 description = "An intuitive Python based HDL code generator for Verilog/SystemVerilog and VHDL."
 readme = "README.md"
 authors = [
